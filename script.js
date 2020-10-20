@@ -1,6 +1,8 @@
 /*
-  Alrighty so we are going to get started with building a player class that will have the default Jedi params.
-  There will also be an Epic Jedi that will be able to a multiplier
+ Below is the player class this is basically going to be where you will create a jedi.
+ It has two methods
+  - jediDuel (takes an object) - creates a dueling effect
+  - callOut (takes an object) - that gets the taunts of the jedi
 */
 
 // ================= Player Class ==============
@@ -61,8 +63,6 @@ class EpicPlayerJedi extends PlayerJedi{
   }
 }
 
-
-
 const listOfPlayers = [
   {
     name: 'Obi-wan',
@@ -92,9 +92,11 @@ const listOfPlayers = [
     taunt: ['You are ungrateful', 'I will take back what is mine']
   }
 ]
+// ===================================================================================
 
 /*
-  Below are player objects that we will be using... Each player with their own unique.... skills
+  This function selects takes in a player name and a player list of objects that are already pre made.
+  The function goes through the playerList array looking if the jediName is the same as the player list name and then spits it out
 */
 function playerSelector(objInsideArr, jediName){
   let playerName;
@@ -108,6 +110,7 @@ function playerSelector(objInsideArr, jediName){
   return playerName;
 }
 
+// This needs some work
 function enemySelector(obj,jediName){
   let playerName;
   const trash = [];
@@ -120,36 +123,36 @@ function enemySelector(obj,jediName){
     randomNum = Math.floor(Math.random() * obj.length);
     playerName = obj[randomNum]
   }
+
+  // do while loop
+
   return playerName
 }
 
 
-//This is going to be able to assaign in global and not just availble in the game manager method
+/*
+  These varaibles are for the global scope which will then be used inside the gameManager constructor
+*/
 let player;
 
 let enemy;
 
 let jediName;
 
-
-
-// player = playerSelector(listOfPlayers, 'Yoda');
-// player = new EpicPlayerJedi(player);
-// console.log(player.name)
-
-
 /*
   Game Manager
-
+  This is a constor function that will take in 4 methods
+  - setGameStart - will take the jediName and pass it through the constructor
+  - resetPlayer
+    - will use the global player variable and assign it new Player object that will take in the function that will choose the jedi with the jediName given.
+    -
 */
 
 const gameManager = {
   setGameStart: function(jediName){
     this.resetPlayer(jediName);
-    this.setPreFight(jediName);
-    // this.name = jediName
-    // console.log(this.name)
-    // this.setFight(jediName)
+    this.setPreFight();
+
   },
   // This will actually create our player in the game
   resetPlayer: function(jediName){
@@ -165,21 +168,10 @@ const gameManager = {
     }else if(jediName === 'Kylo Ren'){
       player = new PlayerJedi(playerSelector(listOfPlayers, jediName))
     }
-
     // Grabbing the container with all the players
-    let getInterface = document.querySelector('.interface');
-    getInterface.innerHTML = `
-        <img src="img/${jediName.toLowerCase()}.jpeg" class="img-avatar">
-        <div>
-        <h3>${jediName}</h3>
-        <p class="health-player">Health: ${player.health}</p>
-        <p>Force Attack: ${player.forceAttack}</p>
-        <p>Multiplier: ${player.attackMult ? player.attackMult : 'struggle'}</p>
-        </div>`
-
+    createFight(jediName);
   },
   setPreFight: function(jediName){
-    const jedi = jediName;
     let getHeader = document.querySelector('header')
     let getAction = document.querySelector('.actions')
     let getArena = document.querySelector('.arena');
@@ -197,7 +189,7 @@ const gameManager = {
     // console.log(jediName.jediDuel())
     // Generate Enemy
     enemy = new PlayerJedi(enemySelector(listOfPlayers,jediName));
-    console.log('pls' + jediName.name)
+    // console.log('pls' + jediName.name)
     getHeader.innerHTML = '<p>Attack or Taunt</p>'
     getAction.innerHTML = `<a href="#" class="btn-preFight" onclick="jediName.jediDuel(enemy)">Attack</a>`
     getEnemy.innerHTML = `
@@ -223,7 +215,25 @@ const gameManager = {
 
 
 
+function createFight(jediName){
 
+  const getInterface = document.querySelector('.jediProfiles');
+  const fight = document.createElement('div');
+
+  fight.className = 'innerInterface'
+  getInterface.innerHTML = '';
+  getInterface.appendChild(fight)
+  fight.innerHTML = `
+      <div>
+        <img src="img/${jediName.toLowerCase()}.jpeg" class="img-avatar">
+        <div>
+        <h3>${jediName}</h3>
+        <p class="health-player">Health: ${player.health}</p>
+        <p>Force Attack: ${player.forceAttack}</p>
+        <p>Multiplier: ${player.attackMult ? player.attackMult : 'struggle'}</p>
+        </div>
+      </div>`
+}
 
 
 
